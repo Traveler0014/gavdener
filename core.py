@@ -25,7 +25,8 @@ def get_info(codename: str, config: Config) -> MovieInfo:
             info = MovieInfo()
         except:
             log(f'获取信息失败, 不再尝试: {codename}', 'ERROR')
-            info = MovieInfo()
+            # info = MovieInfo()
+            raise
 
     return info
 

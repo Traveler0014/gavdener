@@ -1,4 +1,6 @@
 import re
+import traceback
+from urllib.parse import quote
 from typing import Tuple
 
 import requests as req
@@ -48,7 +50,7 @@ class Spider:
                  url: str,
                  params: dict = dict(),
                  data: dict = dict(),
-                 timeout: int = 3,
+                 timeout: int = 5,
                  retry: int = 1):
         try:
             result = self.pages.get(url)
@@ -64,6 +66,7 @@ class Spider:
                         break
                     except:
                         log(f'请求失败: {url}', 'WARNING')
+                        # log(traceback.format_exc(), "ERROR")
                         retry -= 1
                     finally:
                         if retry <= 0:
@@ -105,17 +108,24 @@ class Spider:
 class Javbus(Spider):
 
     def get_codename(self, text: str) -> str | None:
-        res_tree = self.get_etree(f"https://www.javbus.com/search/{text}")
-        code_list = [
-            i.text for i in res_tree.xpath(
-                '//*[@id="waterfall"]/div[*]/a/div[2]/span/date[1]')
-        ]
+        def _get_code_list(url: str):
+            res_tree = self.get_etree(url)
+            if res_tree is None:
+                return list()
+            else:
+                return [i.text for i in res_tree.xpath('//*[@id="waterfall"]/div[*]/a/div[2]/span/date[1]')]
+        
+        code_list = _get_code_list(f"https://www.javbus.com/search/{quote(text, encoding='utf-8')}")
+
+        if not code_list: # 找不到,有可能因为是无码
+            code_list = _get_code_list(f"https://www.javbus.com/uncensored/search/{quote(text, encoding='utf-8')}")
         codename = get_most_like(text, code_list)
         return codename
 
     def get_movie_info(self, codename: str) -> Tuple[str, str, list, list]:
         # result = [title, director, actors, tags]
-        res_tree = self.get_etree(f"https://www.javbus.com/{codename}")
+        res_tree = self.get_etree(f"https://www.javbus.com/{quote(codename, encoding='utf-8')}")
+        assert res_tree is not None
         web_title: str = res_tree.xpath('/html/body/div[5]/h3')[0].text
         title = re.sub(f'{codename}\\s', '', web_title)
         # other info: /html/body/div[5]/div[1]/div[2]/p[*]
@@ -156,6 +166,7 @@ if __name__ == "__main__":
     db = Javbus()
     config = get_config()
     db.set_proxies(config.spider.proxy)
-    info = db.get_info("SNIS-919")
+    info = db.get_info("121421-001")
+    # info = db.get_info("SNIS-919")
     print(info)
     print("test...")

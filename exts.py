@@ -100,7 +100,7 @@ def get_codename(filepath: str) -> str:
     matcher = [
         re.compile(r'(FC|fc)2[-_]?((PPV|ppv)[-_])?\d{6,7}'),  # FC2番号
         re.compile(
-            r'((?<=[^A-Za-z0-9])|^)([A-Z]|[a-z]){2,5}[-_]?\d{3,4}(?!(\d|[A-Za-z0-9]{3,}))'
+            r'((?<=[^A-Za-z])|^)([A-Z]|[a-z]){2,5}[-_]?\d{3,5}(?!(\d|[A-Za-z0-9]{3,}))'
         ),  # 常见番号
         re.compile(
             r'((?<=[^A-Za-z0-9])|^)\d{6,7}[-_]\d{3,4}(?!(\d|[A-Za-z0-9]{3,}))'
@@ -113,7 +113,8 @@ def get_codename(filepath: str) -> str:
             if match_res is not None:
                 codename = match_res.group(0)
         except IndexError:
-            codename = filename
+            codename = os.path.splitext(filename)[0]
+            # codename = filename
 
     return codename
 
@@ -122,8 +123,8 @@ def get_most_like(text: str, possibilities: list) -> str | None:
     cmp_text = text.casefold()
     cmp_list = list(map(str.casefold, possibilities))
     result = get_close_matches(cmp_text, cmp_list, n=3, cutoff=0.4)
-    res_idx = cmp_list.index(result[0])
     if result:
+        res_idx = cmp_list.index(result[0])
         return possibilities[res_idx]
     else:
         return None
