@@ -3,6 +3,7 @@ from typing import Tuple
 
 import requests as req
 from lxml import etree
+
 from exts import get_most_like, get_config, log
 
 
@@ -68,8 +69,8 @@ class Spider:
                         if retry <= 0:
                             log(f'请求失败, 不再重试: {url}', 'ERROR')
                 if retry > 0:
-                    cur_page.encoding = cur_page.apparent_encoding # type: ignore
-                    result = self.pages[url] = cur_page.text # type: ignore
+                    cur_page.encoding = cur_page.apparent_encoding  # type: ignore
+                    result = self.pages[url] = cur_page.text  # type: ignore
             return result
         except:
             raise  # TODO 异常处理

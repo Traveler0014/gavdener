@@ -1,12 +1,14 @@
 import os
-from difflib import SequenceMatcher, get_close_matches
-from typing import Any, List, Tuple
-import yaml
 import re
+from typing import Any, List
+from difflib import SequenceMatcher, get_close_matches
+
+import yaml
 
 
 def log(msg: str, level: str = "i"):
-    print(f'[{level[0].lower()}]::{msg}')
+    with open("gavdener.log", "a", encoding='utf-8') as fp:
+        fp.write(f'[{level[0].lower()}]::{msg}\n')
 
 
 class Config(dict):
@@ -63,7 +65,9 @@ def file_scanner(target_dir: str,
                     continue
                 if exclude and func(file) in exclude:
                     continue
-                result.append(os.path.join(os.path.realpath(target_dir), _parent_dir, file))
+                result.append(
+                    os.path.join(os.path.realpath(target_dir), _parent_dir,
+                                 file))
         elif dirs:
             pass
         else:
@@ -112,6 +116,7 @@ def get_codename(filepath: str) -> str:
             codename = filename
 
     return codename
+
 
 def get_most_like(text: str, possibilities: list) -> str | None:
     cmp_text = text.casefold()
