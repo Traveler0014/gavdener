@@ -1,0 +1,25 @@
+general:
+  media_dir: 'F:\Watch\AD'
+  target_dir: 'F:\Watch\Porn'
+  debug: false
+
+spider:
+  resource_sites:
+    - 'javbus'
+  proxy:
+    http: 'http://127.0.0.1:10809'
+    https: 'http://127.0.0.1:10809'
+  timeout: 10
+  retry: 3
+
+scrapper:
+  target_exts:
+    - '.mp4'
+    - '.avi'
+    - '.rmvb'
+    - '.wmv'
+    - '.mov'
+    - '.mkv'
+    - '.flv'
+    - '.ts'
+    - '.webm'
