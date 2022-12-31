@@ -60,6 +60,8 @@ def file_scanner(target_dir: str,
         _parent_dir = os.path.relpath(parent_dir, target_dir)
 
         if files:
+            if 'gavdener.ignore' in files:
+                continue
             for file in files:
                 if include and func(file) not in include:
                     continue

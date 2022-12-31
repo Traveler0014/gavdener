@@ -4,6 +4,8 @@ import traceback
 import sys
 from typing import List
 
+import yaml
+
 import spider
 from spider import MovieInfo
 from exts import log, get_config, file_scanner, get_codename, Config
@@ -26,9 +28,32 @@ def get_info(codename: str, config: Config) -> MovieInfo:
         except:
             log(f'获取信息失败, 不再尝试: {codename}', 'ERROR')
             # info = MovieInfo()
-            raise
+            # raise
 
     return info
+
+
+def set_mark(path: str, info: MovieInfo = None):  # type: ignore
+    if os.path.isfile(path):
+        target_dir = os.path.dirname(path)
+    elif os.path.isdir(path):
+        target_dir = path
+    else:
+        return 1
+
+    if info is None:
+        filename = "gavdener.ignore"
+    else:
+        filename = "gavdener.yml"
+    target_path = os.path.join(target_dir, filename)
+    with open(target_path, "w", encoding='utf-8') as fp:
+        if info is None:
+            log(f'标记为无效路径: {target_dir}')
+        else:
+            log(f'添加标记: {target_dir}')
+            yaml_info = yaml.dump(info.to_dict(), indent=2)
+            fp.write(yaml_info)
+    return 0
 
 
 def move_movie(path: str, info: MovieInfo, config: Config) -> int:
@@ -53,6 +78,7 @@ def move_movie(path: str, info: MovieInfo, config: Config) -> int:
             log(f'移动文件: {path} -> {target_path}', 'debug')
         else:
             log(f'移动文件: {path} -> {target_path}', 'info')
+            set_mark(target_path, info)
             shutil.move(path, target_path)
 
         return 0
@@ -60,8 +86,10 @@ def move_movie(path: str, info: MovieInfo, config: Config) -> int:
         log(traceback.format_exc(), "ERROR")
         return 1
 
+
 def bar(msg):
     sys.stdout.write(f'{msg}\r')
+
 
 def main(config: str = None) -> int:  # type: ignore
     if config is None:
@@ -84,13 +112,14 @@ def main(config: str = None) -> int:  # type: ignore
             log(f"影片信息:\n{info}")
             if info.codename and info.codename != MovieInfo.default_text:
                 move_movie(movie, info, _config)
+            else:
+                set_mark(movie)
         except:
             log(f'处理失败: {movie}', 'ERROR')
             # log(traceback.format_exc(), 'ERROR')
             raise
         finally:
             log(f"处理结束: {movie}".rjust(128, "<"))
-
 
 
 if __name__ == '__main__':

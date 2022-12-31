@@ -28,6 +28,13 @@ class MovieInfo:
         tags = f'标签:\t{"; ".join(self.tags)}'
         return "\n".join([line, codename, title, director, actors, tags, line])
 
+    def to_dict(self):
+        return dict(codename=self.codename,
+                    title=self.title,
+                    director=self.director,
+                    actors=self.actors,
+                    tags=self.tags)
+
 
 class Spider:
 
@@ -108,23 +115,31 @@ class Spider:
 class Javbus(Spider):
 
     def get_codename(self, text: str) -> str | None:
+
         def _get_code_list(url: str):
             res_tree = self.get_etree(url)
             if res_tree is None:
                 return list()
             else:
-                return [i.text for i in res_tree.xpath('//*[@id="waterfall"]/div[*]/a/div[2]/span/date[1]')]
-        
-        code_list = _get_code_list(f"https://www.javbus.com/search/{quote(text, encoding='utf-8')}")
+                return [
+                    i.text for i in res_tree.xpath(
+                        '//*[@id="waterfall"]/div[*]/a/div[2]/span/date[1]')
+                ]
 
-        if not code_list: # 找不到,有可能因为是无码
-            code_list = _get_code_list(f"https://www.javbus.com/uncensored/search/{quote(text, encoding='utf-8')}")
+        code_list = _get_code_list(
+            f"https://www.javbus.com/search/{quote(text, encoding='utf-8')}")
+
+        if not code_list:  # 找不到,有可能因为是无码
+            code_list = _get_code_list(
+                f"https://www.javbus.com/uncensored/search/{quote(text, encoding='utf-8')}"
+            )
         codename = get_most_like(text, code_list)
         return codename
 
     def get_movie_info(self, codename: str) -> Tuple[str, str, list, list]:
         # result = [title, director, actors, tags]
-        res_tree = self.get_etree(f"https://www.javbus.com/{quote(codename, encoding='utf-8')}")
+        res_tree = self.get_etree(
+            f"https://www.javbus.com/{quote(codename, encoding='utf-8')}")
         assert res_tree is not None
         web_title: str = res_tree.xpath('/html/body/div[5]/h3')[0].text
         title = re.sub(f'{codename}\\s', '', web_title)
