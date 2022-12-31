@@ -1,19 +1,19 @@
 general:
-  media_dir: 'F:\Watch\AD'
-  target_dir: 'F:\Watch\Porn'
-  debug: false
+  media_dir: 'F:\Watch\AD' # 源文件夹
+  target_dir: 'F:\Watch\Porn' # 目标文件夹
+  debug: true # 调试模式,若设为true,则不会真正的移动文件.
 
 spider:
-  resource_sites:
+  resource_sites: # 资源站顺序(目前只支持javbus,墙内访问需挂梯)
     - 'javbus'
-  proxy:
-    http: 'http://127.0.0.1:10809'
-    https: 'http://127.0.0.1:10809'
+  proxy: # 代理配置, 如无需代理请删除
+    http: #'http://127.0.0.1:10809'
+    https: #'http://127.0.0.1:10809'
   timeout: 10
   retry: 3
 
 scrapper:
-  target_exts:
+  target_exts: # 文件类型,仅列出的文件类型会被处理.
     - '.mp4'
     - '.avi'
     - '.rmvb'

@@ -12,6 +12,30 @@
     - [x] 无法获取足够信息的文件,不做处理
 - [x] 配置文件
 
+## 食用说明
+
+1. 安装python(3.9以上版本)
+
+2. 进入项目路径:
+
+   ```
+   cd ./gavdener
+   ```
+
+3. 安装依赖:
+
+   ```powershell
+   pip install -r ./requirements.txt
+   ```
+
+4. 配置...
+
+5. 启动整理器:
+
+   ```powershell
+   python core.py
+   ```
+
 ## 配置说明
 
 ```yaml
@@ -41,4 +65,3 @@ scrapper:
     - '.ts'
     - '.webm'
 ```
-
