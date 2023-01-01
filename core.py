@@ -135,13 +135,16 @@ def bar(msg):
     sys.stdout.flush()
 
 
-def main(config: str = None) -> int:  # type: ignore
+def main(src_dir: str = None, config: str = None) -> int:  # type: ignore
     if config is None:
         _config = get_config()
     else:
         _config = get_config(config)
 
-    all_movies = file_scanner(target_dir=_config.general.media_dir,
+    if src_dir is None:
+        src_dir = _config.general.media_dir
+
+    all_movies = file_scanner(target_dir=src_dir,
                               include=_config.scrapper.target_exts,
                               ignore_file=_config.general.ignore_file)
     total = len(all_movies)
@@ -170,4 +173,8 @@ def main(config: str = None) -> int:  # type: ignore
 
 
 if __name__ == '__main__':
-    main()
+    if len(sys.argv) > 1:
+        args = sys.argv[1:]
+        main(*args)
+    else:
+        main()
