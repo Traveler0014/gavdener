@@ -52,7 +52,8 @@ def get_config(path: str = 'config.yaml'):
 def file_scanner(target_dir: str,
                  include: list = list(),
                  exclude: list = list(),
-                 func=lambda x: os.path.splitext(x)[1]) -> List[str]:
+                 func=lambda x: os.path.splitext(x)[1],
+                 ignore_file: str='gavdener.ignore') -> List[str]:
     result = list()
 
     for parent_dir, dirs, files in os.walk(target_dir):
@@ -60,7 +61,7 @@ def file_scanner(target_dir: str,
         _parent_dir = os.path.relpath(parent_dir, target_dir)
 
         if files:
-            if 'gavdener.ignore' in files:
+            if ignore_file in files:
                 continue
             for file in files:
                 if include and func(file) not in include:
@@ -95,6 +96,15 @@ def get_codename(filepath: str) -> str:
     filename = os.path.basename(filepath)
     filedir = os.path.dirname(filepath)
 
+    if 'gavdener-info.yaml' in os.listdir(filedir):
+        log(f'找到info文件: {filepath}')
+        info_path = os.path.join(filedir, 'gavdener-info.yaml')
+        with open(info_path, 'r', encoding='utf-8') as fp:
+            data : dict= yaml.Loader(fp).get_data()
+            try:
+                return data["codename"]
+            except:
+                log(f'info文件有误: {info_path}')
     name = common_part(filename, filedir, 0)
 
     codename = None

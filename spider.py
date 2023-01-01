@@ -114,6 +114,12 @@ class Spider:
 
 class Javbus(Spider):
 
+    @property
+    def infos(self) -> dict:
+        if not hasattr(self, "_infos"):
+            self._infos = dict()
+        return self._infos
+
     def get_codename(self, text: str) -> str | None:
 
         def _get_code_list(url: str):
@@ -167,6 +173,10 @@ class Javbus(Spider):
         return title, director, actors, tags
 
     def get_info(self, name: str) -> MovieInfo | None:
+        # 检查是否已有缓存
+        if self.infos.get(name):
+            return self.infos[name]
+
         info = None
         codename = self.get_codename(name)
         if codename is not None:
@@ -174,6 +184,7 @@ class Javbus(Spider):
             info.codename = codename
             info.title, info.director, info.actors, info.tags = self.get_movie_info(
                 codename)
+        self.infos[codename] = info
         return info
 
 

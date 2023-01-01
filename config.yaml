@@ -1,7 +1,10 @@
 general:
-  media_dir: 'F:\Watch\AD' # 源文件夹
-  target_dir: 'F:\Watch\Porn' # 目标文件夹
-  debug: false # 调试模式,若设为true,则不会真正的移动文件.
+  debug: true # 调试模式,若设为true,则不会真正的移动文件.
+
+  media_dir: 'H:\Video' # 源文件夹
+  target_dir: 'H:\Video\Porn' # 目标文件夹
+  ignore_file: 'gavdener.ignore' # 忽略标记, 存在该文件则不处理同级目录下的所有影片
+  info_file: 'gavdener-info.yml' # 影片信息
 
 spider:
   resource_sites: # 资源站顺序(目前只支持javbus,墙内访问需挂梯)
@@ -23,3 +26,4 @@ scrapper:
     - '.flv'
     - '.ts'
     - '.webm'
+  multi_actors: true # 影片具有多个演员时,该项为true,则会在其余演员文件夹下创建目录及链接;否则仅取首位演员.
