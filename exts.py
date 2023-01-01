@@ -53,7 +53,7 @@ def file_scanner(target_dir: str,
                  include: list = list(),
                  exclude: list = list(),
                  func=lambda x: os.path.splitext(x)[1],
-                 ignore_file: str='gavdener.ignore') -> List[str]:
+                 ignore_file: str = 'gavdener.ignore') -> List[str]:
     result = list()
 
     for parent_dir, dirs, files in os.walk(target_dir):
@@ -92,15 +92,15 @@ def common_part(text1: str, text2: str, ret_id: int = -1) -> str:
         return text1[astart:astart + size]
 
 
-def get_codename(filepath: str) -> str:
+def get_codename(filepath: str, info_file: str = 'info.yaml') -> str:
     filename = os.path.basename(filepath)
     filedir = os.path.dirname(filepath)
 
-    if 'gavdener-info.yaml' in os.listdir(filedir):
+    if info_file in os.listdir(filedir):
         log(f'找到info文件: {filepath}')
-        info_path = os.path.join(filedir, 'gavdener-info.yaml')
+        info_path = os.path.join(filedir, info_file)
         with open(info_path, 'r', encoding='utf-8') as fp:
-            data : dict= yaml.Loader(fp).get_data()
+            data: dict = yaml.Loader(fp).get_data()
             try:
                 return data["codename"]
             except:

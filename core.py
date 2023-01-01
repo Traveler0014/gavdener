@@ -2,7 +2,6 @@ import os
 import shutil
 import traceback
 import sys
-import subprocess
 from typing import List
 
 import yaml
@@ -10,8 +9,6 @@ import yaml
 import spider
 from spider import MovieInfo
 from exts import log, get_config, file_scanner, get_codename, Config
-
-IGNORE_FILE = 'gavdener.ignore'
 
 
 def get_info(codename: str, config: Config) -> MovieInfo:
@@ -36,7 +33,10 @@ def get_info(codename: str, config: Config) -> MovieInfo:
     return info
 
 
-def set_mark(path: str, info: MovieInfo = None, ignore_file: str='gavdener.ignore', info_file: str='info.yaml'):  # type: ignore
+def set_mark(path: str,
+             info: MovieInfo = None,
+             ignore_file: str = 'gavdener.ignore',
+             info_file: str = 'info.yaml'):  # type: ignore
     if os.path.isfile(path):
         target_dir = os.path.dirname(path)
     elif os.path.isdir(path):
@@ -54,7 +54,10 @@ def set_mark(path: str, info: MovieInfo = None, ignore_file: str='gavdener.ignor
             log(f'标记为无效路径: {target_dir}')
         else:
             log(f'添加标记: {target_dir}')
-            yaml_info = yaml.dump(info.to_dict(), indent=2, allow_unicode=True, sort_keys=False)
+            yaml_info = yaml.dump(info.to_dict(),
+                                  indent=2,
+                                  allow_unicode=True,
+                                  sort_keys=False)
             fp.write(yaml_info)
     return 0
 
@@ -90,9 +93,15 @@ def move_movie(path: str, info: MovieInfo, config: Config) -> int:
             log(f'移动文件: {path} -> {target_path}', 'info')
             if is_same:
                 log(f'文件已存在, 仅补充信息: {target_path}')
-                set_mark(target_path, info, ignore_file = config.general.ignore_file, info_file = config.general.info_file)
+                set_mark(target_path,
+                         info,
+                         ignore_file=config.general.ignore_file,
+                         info_file=config.general.info_file)
             else:
-                set_mark(target_path, info, ignore_file = config.general.ignore_file, info_file = config.general.info_file)
+                set_mark(target_path,
+                         info,
+                         ignore_file=config.general.ignore_file,
+                         info_file=config.general.info_file)
                 shutil.move(path, target_path)
 
         # 创建链接
@@ -101,6 +110,10 @@ def move_movie(path: str, info: MovieInfo, config: Config) -> int:
                 tmp_dir = os.path.join(target_root_dir, actor, info.codename)
                 os.makedirs(tmp_dir, exist_ok=True)
                 tmp_path = os.path.join(tmp_dir, filename)
+                set_mark(tmp_path,
+                         info,
+                         ignore_file=config.general.ignore_file,
+                         info_file=config.general.info_file)
                 if os.path.isfile(
                         target_path) and not os.path.exists(tmp_path):
                     log(f'创建链接: {tmp_path} -> {target_path}')
@@ -123,14 +136,15 @@ def main(config: str = None) -> int:  # type: ignore
         _config = get_config(config)
 
     all_movies = file_scanner(target_dir=_config.general.media_dir,
-                              include=_config.scrapper.target_exts, ignore_file=_config.general.ignore_file)
+                              include=_config.scrapper.target_exts,
+                              ignore_file=_config.general.ignore_file)
     total = len(all_movies)
     log(f'共扫描到影片{total}部')
 
     for movie in all_movies:
         bar(f'正在处理: {movie} 进度: {all_movies.index(movie)+1}/{total}')
         log(f"开始处理: {movie}".rjust(128, ">"))
-        codename = get_codename(movie)
+        codename = get_codename(movie, _config.general.info_file)
         try:
             log(f'获取信息: {codename}')
             info = get_info(codename, _config)
@@ -138,7 +152,9 @@ def main(config: str = None) -> int:  # type: ignore
             if info.codename and info.codename != MovieInfo.default_text:
                 move_movie(movie, info, _config)
             else:
-                set_mark(movie, ignore_file = _config.general.ignore_file, info_file = _config.general.info_file)
+                set_mark(movie,
+                         ignore_file=_config.general.ignore_file,
+                         info_file=_config.general.info_file)
         except:
             log(f'处理失败: {movie}', 'ERROR')
             # log(traceback.format_exc(), 'ERROR')
