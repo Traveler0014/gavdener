@@ -7,7 +7,8 @@ general:
   info_file: 'gavdener-info.yml' # 影片信息
 
 spider:
-  resource_sites: # 资源站顺序(目前只支持javbus,墙内访问需挂梯)
+  resource_sites: # 资源站顺序
+    - 'javdb'
     - 'javbus'
   proxy: # 代理配置, 如无需代理请删除
     http: 'http://127.0.0.1:10809'

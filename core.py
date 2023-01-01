@@ -6,21 +6,21 @@ from typing import List
 
 import yaml
 
-import spider
-from spider import MovieInfo
+import spiders
+from spiders import MovieInfo
 from exts import log, get_config, file_scanner, get_codename, Config
 
 
 def get_info(codename: str, config: Config) -> MovieInfo:
-    spiders: List[spider.Spider] = list()
+    db_sites: List[spiders.Spider] = list()
     for site in config.spider.resource_sites:
         spider_name = str.capitalize(site).replace(" ", "")
-        spiders.append(getattr(spider, spider_name,
-                               spider.Javbus)())  # type: ignore
+        db_sites.append(getattr(spiders, spider_name,
+                               spiders.Javdb)())  # type: ignore
     info = None
     while info is None:
         try:
-            site = spiders.pop(0)
+            site = db_sites.pop(0)
             site.set_proxies(config.spider.proxy)
             info = site.get_info(codename)
         except IndexError:
@@ -154,6 +154,9 @@ def main(src_dir: str = None, config: str = None) -> int:  # type: ignore
         bar(f'正在处理: {movie} 进度: {all_movies.index(movie)+1}/{total}')
         log(f"开始处理: {movie}".rjust(128, ">"))
         codename = get_codename(movie, _config.general.info_file)
+        if len(codename) <= 3:
+            f'名称太短,已知信息不足,即将跳过: {codename}'
+            continue
         try:
             log(f'获取信息: {codename}')
             info = get_info(codename, _config)
