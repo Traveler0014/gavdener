@@ -38,12 +38,12 @@ def set_mark(
         info: MovieInfo = None,  # type: ignore
         ignore_file: str = 'gavdener.ignore',
         info_file: str = 'info.yaml'):
-    if os.path.isfile(path):
-        target_dir = os.path.dirname(path)
-    elif os.path.isdir(path):
+    if os.path.isdir(path):
         target_dir = path
     else:
-        log(f'停止添加标记, 目标路径未指向目录或文件: {path}')
+        target_dir = os.path.dirname(path)
+    if not os.path.isdir(target_dir):
+        log(f'停止添加标记, 目标路径未指向目录或文件: {path}', 'WARNING')
         return 1
 
     if info is None:
