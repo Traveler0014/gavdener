@@ -38,12 +38,12 @@ def set_mark(
         info: MovieInfo = None,  # type: ignore
         ignore_file: str = 'gavdener.ignore',
         info_file: str = 'info.yaml'):
-    if os.path.isfile(path):
-        target_dir = os.path.dirname(path)
-    elif os.path.isdir(path):
+    if os.path.isdir(path):
         target_dir = path
     else:
-        log(f'停止添加标记, 目标路径未指向目录或文件: {path}')
+        target_dir = os.path.dirname(path)
+    if not os.path.isdir(target_dir):
+        log(f'停止添加标记, 目标路径未指向目录或文件: {path}', 'WARNING')
         return 1
 
     if info is None:
@@ -116,14 +116,14 @@ def move_movie(path: str, info: MovieInfo, config: Config) -> int:
                 tmp_dir = os.path.join(target_root_dir, actor, info.codename)
                 os.makedirs(tmp_dir, exist_ok=True)
                 tmp_path = os.path.join(tmp_dir, filename)
-                set_mark(tmp_path,
-                         info,
-                         ignore_file=config.general.ignore_file,
-                         info_file=config.general.info_file)
                 if os.path.isfile(
                         target_path) and not os.path.exists(tmp_path):
                     log(f'创建链接: {tmp_path} -> {target_path}')
                     os.link(target_path, tmp_path)
+                set_mark(tmp_path,
+                         info,
+                         ignore_file=config.general.ignore_file,
+                         info_file=config.general.info_file)
         return 0
     except:
         log(traceback.format_exc(), "ERROR")

@@ -1,7 +1,7 @@
 general:
-  debug: False # 调试模式,若设为true,则不会真正的移动文件,但会更新信息.
+  debug: true # !!! 调试模式,若设为true,则不会真正的移动文件,但会更新信息.
 
-  media_dir: 'H:\Video' # 源文件夹
+  media_dir: 'H:\Video\Porn' # 源文件夹
   target_dir: 'H:\Video\Porn' # 目标文件夹
   ignore_file: 'gavdener.ignore' # 忽略标记, 存在该文件则不处理同级目录下的所有影片
   info_file: 'gavdener-info.yml' # 影片信息
@@ -26,4 +26,4 @@ scrapper:
     - '.flv'
     - '.ts'
     - '.webm'
-  multi_actors: true # 影片具有多个演员时,该项为true,则会在其余演员文件夹下创建目录及链接;否则仅取首位演员.
+  multi_actors: true # 影片具有多个演员且该项为true时,会在其余演员文件夹下创建目录及硬链接;否则仅将文件移动到首位演员的目录下.
