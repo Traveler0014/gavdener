@@ -33,15 +33,17 @@ def get_info(codename: str, config: Config) -> MovieInfo:
     return info
 
 
-def set_mark(path: str,
-             info: MovieInfo = None,
-             ignore_file: str = 'gavdener.ignore',
-             info_file: str = 'info.yaml'):  # type: ignore
+def set_mark(
+        path: str,
+        info: MovieInfo = None,  # type: ignore
+        ignore_file: str = 'gavdener.ignore',
+        info_file: str = 'info.yaml'):
     if os.path.isfile(path):
         target_dir = os.path.dirname(path)
     elif os.path.isdir(path):
         target_dir = path
     else:
+        log(f'停止添加标记, 目标路径未指向目录或文件: {path}')
         return 1
 
     if info is None:
@@ -89,6 +91,10 @@ def move_movie(path: str, info: MovieInfo, config: Config) -> int:
             target_path = os.path.join(target_dir, tmp_name)
         if config.general.debug:
             log(f'移动文件: {path} -> {target_path}', 'debug')
+            set_mark(target_path,
+                     info,
+                     ignore_file=config.general.ignore_file,
+                     info_file=config.general.info_file)
         else:
             log(f'移动文件: {path} -> {target_path}', 'info')
             if is_same:
